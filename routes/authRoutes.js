@@ -24,7 +24,6 @@ router.get(
             message: "Authentication successful",
             token,
             user: {
-                id: req.user.id,
                 name: req.user.name,
                 email: req.user.email,
             },
