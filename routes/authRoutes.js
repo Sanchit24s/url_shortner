@@ -1,14 +1,9 @@
 const express = require("express");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
-
-const ensureAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/");
-};
 
 router.get(
     "/google",
@@ -19,12 +14,26 @@ router.get(
     "/google/callback",
     passport.authenticate("google", { failureRedirect: "/" }),
     (req, res) => {
-        res.redirect("/auth/profile");
+        const token = jwt.sign(
+            { id: req.user.id, email: req.user.email, name: req.user.name },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        res.json({
+            message: "Authentication successful",
+            token,
+            user: {
+                id: req.user.id,
+                name: req.user.name,
+                email: req.user.email,
+            },
+        });
     }
 );
 
-router.get("/profile", ensureAuthenticated, (req, res) => {
-    res.send(`Welcome ${req.user.name}`);
+router.get("/profile", authMiddleware, (req, res) => {
+    res.json({ success: true, message: `Welcome ${req.user.name}` });
 });
 
 router.get("/logout", (req, res) => {

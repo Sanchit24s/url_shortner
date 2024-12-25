@@ -4,6 +4,8 @@ const session = require("express-session");
 const passport = require("passport");
 const connectDB = require("./config/connectDB");
 const authRoutes = require("./routes/authRoutes");
+const urlRoutes = require("./routes/urlRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 require("dotenv").config();
 require("./config/passport");
 
@@ -24,6 +26,8 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/auth", authRoutes);
+app.use("/api/shorten", urlRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 app.get("/", (req, res) => {
     res.send("<a href='/auth/google'>Login with Google</a>");
