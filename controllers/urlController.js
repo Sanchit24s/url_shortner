@@ -8,7 +8,7 @@ const aggregatedAnalyticsModel = require("../models/aggregatedAnalyticsModel");
 
 const shortenUrl = async (req, res) => {
     try {
-        const { longUrl, customAlias, topic } = req.body;
+        let { longUrl, customAlias, topic } = req.body;
         if (!longUrl || !validator.isURL(longUrl)) {
             return res.status(400).json({ message: "Invalid or missing URL." });
         }
