@@ -14,13 +14,17 @@ const shortenUrl = async (req, res) => {
         }
         const userId = req.user.id;
 
-        let shortUrl = customAlias || nanoid(6);
+        if (!customAlias) {
+            customAlias = nanoid(10);
+        }
+
+        let shortUrl = `${process.env.SERVER_URL}/${customAlias}`;
         const existing = await urlModel.findOne({ shortUrl });
 
         if (existing)
             return res.status(400).json({ error: "Custom alias already exists" });
 
-        const newUrl = new urlModel({ longUrl, shortUrl, topic, userId });
+        const newUrl = new urlModel({ longUrl, shortUrl, topic, userId, customAlias });
         await newUrl.save();
         await redisClient.set(`shortUrl:${shortUrl}`, longUrl);
 
