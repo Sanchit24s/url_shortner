@@ -18,7 +18,7 @@ const shortenUrl = async (req, res) => {
             customAlias = nanoid(10);
         }
 
-        let shortUrl = `${process.env.SERVER_URL}/${customAlias}`;
+        let shortUrl = `${process.env.SERVER_URL}/api/shorten/${customAlias}`;
         const existing = await urlModel.findOne({ shortUrl });
 
         if (existing)
@@ -42,7 +42,6 @@ const redirectShortUrl = async (req, res) => {
         // Check Redis cache first
         let longUrl = await redisClient.get(`shortUrl:${alias}`);
         if (!longUrl) {
-            // Fallback to MongoDB
             const urlEntry = await urlModel.findOne({ shortUrl: alias });
             if (!urlEntry) {
                 return res.status(404).json({ message: "Short URL not found." });
@@ -62,9 +61,9 @@ const redirectShortUrl = async (req, res) => {
         const userAgent = req.headers["user-agent"];
         console.log(userAgent);
         const timestamp = new Date();
-        const dateString = timestamp.toISOString().split("T")[0]; // Extract date in YYYY-MM-DD format
+        const dateString = timestamp.toISOString().split("T")[0];
 
-        // Extract device and OS information using `user-agent` parsing library
+        // Extract device and OS information 
         const userAgentParser = require("ua-parser-js");
         const parsedUserAgent = userAgentParser(userAgent);
         const osName = parsedUserAgent.os.name || "Unknown OS";
@@ -80,7 +79,6 @@ const redirectShortUrl = async (req, res) => {
             });
         }
 
-        // Update total clicks
         analytics.totalClicks += 1;
 
         // Update unique clicks and unique visitors
@@ -131,11 +129,11 @@ const redirectShortUrl = async (req, res) => {
         // Save analytics updates
         await analytics.save();
 
-        // Capture detailed redirect event analytics asynchronously
+        // Capture detailed redirect event analytics 
         let geoData = {};
         try {
             const geoResponse = await axios.get(`http://ip-api.com/json/${req.ip}`, {
-                timeout: 5000, // 5 second timeout
+                timeout: 5000, // 5 s
             });
             geoData = geoResponse.data;
         } catch (geoError) {
@@ -152,7 +150,7 @@ const redirectShortUrl = async (req, res) => {
             .save()
             .catch((error) => console.error("Event logging failed:", error));
 
-        // Redirect to the original long URL
+        // Redirect to the original url
         return res.redirect(longUrl.toString());
     } catch (error) {
         console.error("Redirection error:", error);

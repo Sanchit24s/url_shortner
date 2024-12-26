@@ -70,14 +70,14 @@ const getTopicBasedAnalytics = async (req, res) => {
         const urlAnalytics = [];
 
         for (const url of urls) {
-            const alias = url.shortUrl;
+            const alias = url.customAlias;
 
             // Fetch analytics for each URL
             const analytics = await aggregatedAnalyticsModel.findOne({ alias });
             if (analytics) {
                 totalClicks += analytics.totalClicks;
 
-                // Update uniqueClicks for the topic (aggregate unique visitors per URL)
+                // Update uniqueClicks for the topic 
                 uniqueClicks += analytics.uniqueClicks;
 
                 // Aggregate clicks by date
@@ -91,9 +91,8 @@ const getTopicBasedAnalytics = async (req, res) => {
                     );
                 }
 
-                // Add URL-specific analytics to the response
                 urlAnalytics.push({
-                    shortUrl: alias,
+                    shortUrl: url.shortUrl,
                     totalClicks: analytics.totalClicks,
                     uniqueClicks: analytics.uniqueClicks,
                 });
