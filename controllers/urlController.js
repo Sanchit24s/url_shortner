@@ -42,7 +42,7 @@ const redirectShortUrl = async (req, res) => {
         // Check Redis cache first
         let longUrl = await redisClient.get(`shortUrl:${alias}`);
         if (!longUrl) {
-            const urlEntry = await urlModel.findOne({ shortUrl: alias });
+            const urlEntry = await urlModel.findOne({ customAlias: alias });
             if (!urlEntry) {
                 return res.status(404).json({ message: "Short URL not found." });
             }
