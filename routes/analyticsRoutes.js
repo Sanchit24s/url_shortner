@@ -5,7 +5,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 router.get("/overall", authMiddleware, overallAnalytics);
-router.get("/:alias", getAlias);
-router.get("/topic/:topic", getTopicBasedAnalytics);
+router.get("/:alias", authMiddleware, getAlias);
+router.get("/topic/:topic", authMiddleware, getTopicBasedAnalytics);
 
 module.exports = router;
